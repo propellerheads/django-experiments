@@ -4,6 +4,8 @@ experiments = function() {
             $.post("/experiments/confirm_human/");
         },
         goal: function(goal_name) {
+            var lastChar = goal_name.length-1;
+            if (goal_name.charAt(lastChar) !== '/') { goal_name += '/' };
             $.post("/experiments/goal/" + goal_name);
         }
     };
