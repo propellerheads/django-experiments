@@ -1,15 +1,63 @@
-google.load('visualization', '1.0', {'packages':['corechart']});
+!(function(jQuery, google) {
 
-(function($) {
+    // Load the Visualization API and the corechart package.
+    google.charts.load('current', {'packages':['corechart']});
 
-    $(function() {
+    // Set a callback to run when the Google Visualization API is loaded.
+    google.charts.setOnLoadCallback(drawChart);
+
+    // ------------------------------ Showing MWU charts
+    function drawChart() {
+        jQuery(function($) {
+
+            $('[data-chart-goal]').on('click', function() {
+                var goal = $(this).data('chart-goal');
+
+                $('#' + goal + '_mwu_row').toggle();
+
+                var $graph = $('#' + goal + '_chart');
+
+                if (!$graph.data('rendered')) {
+                    $graph.data('rendered', true);
+
+                    var chartData = google.visualization.arrayToDataTable(window.Experiments.EXPERIMENT_CHART_DATA[goal]),
+                        chart = new google.visualization.LineChart($graph[0]),
+                        options = {
+                            height: 750,
+                            hAxis: {
+                                title: 'Performed action at least this many times',
+                                logScale: true
+                            },
+                            vAxis : {
+                                title: 'Fraction of users'
+                            },
+                            legend : {
+                                position: 'top',
+                                alignment: 'center'
+                            },
+                            chartArea: {
+                                width: "75%",
+                                height: "75%"
+                            }
+                        };
+
+                    chart.draw(chartData, options);
+                }
+            });
+        });
+    }
+
+    jQuery(function($) {
         var $table = $('#experiment-results-table');
 
-        $('#experiment-toggle-goals').click(function() { $table.toggleClass('experiment-hide-irrelevant'); return false; });
+        $('#experiment-toggle-goals').on('click', function() { 
+            $table.toggleClass('experiment-hide-irrelevant'); 
+            return false; 
+        });
 
         // ------------------------------ Changing the alternative
 
-        $('[data-alternative]').click(function() {
+        $('[data-alternative]').on('click', function() {
             var $this = $(this);
 
             if ($this.hasClass('experiment-selected-alternative')) {
@@ -45,7 +93,7 @@ google.load('visualization', '1.0', {'packages':['corechart']});
 
         // ------------------------------ Changing the state
 
-        $('[data-set-state]').click(function() {
+        $('[data-set-state]').on('click', function() {
             var $this = $(this),
                 $stateSelect = $('#id_state');
 
@@ -68,43 +116,6 @@ google.load('visualization', '1.0', {'packages':['corechart']});
             });
 
             return false;
-        });
-
-        // ------------------------------ Showing MWU charts
-
-        $('[data-chart-goal]').click(function() {
-            var goal = $(this).data('chart-goal');
-
-            $('#' + goal + '_mwu_row').toggle();
-
-            var $graph = $('#' + goal + '_chart');
-
-            if (!$graph.data('rendered')) {
-                $graph.data('rendered', true);
-
-                var chartData = google.visualization.arrayToDataTable(window.Experiments.EXPERIMENT_CHART_DATA[goal]),
-                    chart = new google.visualization.LineChart($graph[0]),
-                    options = {
-                        height: 750,
-                        hAxis: {
-                            title: 'Performed action at least this many times',
-                            logScale: true
-                        },
-                        vAxis : {
-                            title: 'Fraction of users'
-                        },
-                        legend : {
-                            position: 'top',
-                            alignment: 'center'
-                        },
-                        chartArea: {
-                            width: "75%",
-                            height: "75%"
-                        }
-                    };
-
-                chart.draw(chartData, options);
-            }
         });
 
         // ------------------------------ Relevant goal checkbox inputs
@@ -159,4 +170,4 @@ google.load('visualization', '1.0', {'packages':['corechart']});
         });
     });
 
-})(django.jQuery);
+})(django.jQuery, window.google);

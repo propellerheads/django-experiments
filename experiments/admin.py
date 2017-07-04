@@ -1,12 +1,14 @@
+from django import forms
+from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
-from django import forms
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils import timezone
+
+from experiments import conf
 from experiments.admin_utils import get_result_context
 from experiments.models import Experiment
-from experiments import conf
-from django.conf.urls import url
 from experiments.utils import participant
 
 
@@ -67,17 +69,27 @@ class ExperimentAdmin(admin.ModelAdmin):
 
     # --------------------------------------- Overriding admin views
 
-    class Media:
+    @property
+    def media(self):
+        media = super().media
+
         css = {
-            "all": (
-                'css/experiments/dashboard/admin.css',
-            ),
+            'all': ('css/experiments/dashboard/admin.css',)
         }
         js = (
-            'https://www.google.com/jsapi',  # used for charts
+            'https://www.gstatic.com/charts/loader.js',  # used for charts
             'js/experiments/dashboard/csrf.js',
             'js/experiments/dashboard/admin.js',
         )
+
+        media.add_css(dict([
+            (key, [static(path) for path in paths])
+            for key, paths in css.items()
+        ]))
+
+        media.add_js([static(path) for path in js])
+
+        return media
 
     def _admin_view_context(self, extra_context=None):
         context = {}
@@ -156,4 +168,3 @@ class ExperimentAdmin(admin.ModelAdmin):
         return HttpResponse()
 
 admin.site.register(Experiment, ExperimentAdmin)
-
