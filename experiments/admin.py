@@ -88,7 +88,7 @@ class ExperimentAdmin(admin.ModelAdmin):
             for key, paths in css.items()
         ]))
 
-        media.add_js([path for path in static_js])
+        media.add_js([path for path in js])
 
         return media
 
