@@ -76,10 +76,11 @@ class ExperimentAdmin(admin.ModelAdmin):
         css = {
             'all': ('css/experiments/dashboard/admin.css',)
         }
+
         js = (
             'https://www.gstatic.com/charts/loader.js',  # used for charts
-            'js/experiments/dashboard/csrf.js',
-            'js/experiments/dashboard/admin.js',
+            static('js/experiments/dashboard/csrf.js'),
+            static('js/experiments/dashboard/admin.js'),
         )
 
         media.add_css(dict([
@@ -87,7 +88,7 @@ class ExperimentAdmin(admin.ModelAdmin):
             for key, paths in css.items()
         ]))
 
-        media.add_js([static(path) for path in js])
+        media.add_js([path for path in static_js])
 
         return media
 
