@@ -1,15 +1,14 @@
-from django.db import models
-from django.core.serializers.json import DjangoJSONEncoder
-from django.conf import settings
+import json
+import random
 
+import django.db.models.deletion
+from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 from jsonfield import JSONField
 
-import random
-import json
-
-from experiments.dateutils import now
 from experiments import conf
-
+from experiments.dateutils import now
 
 CONTROL_STATE = 0
 ENABLED_STATE = 1
@@ -106,8 +105,9 @@ class Experiment(models.Model):
 
 class Enrollment(models.Model):
     """ A participant in a split testing experiment """
-    user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'))
-    experiment = models.ForeignKey(Experiment)
+    user = models.ForeignKey(getattr(settings, 'AUTH_USER_MODEL', 'auth.User'),
+                             on_delete=django.db.models.deletion.DO_NOTHING)
+    experiment = models.ForeignKey(Experiment, on_delete=django.db.models.deletion.DO_NOTHING)
     enrollment_date = models.DateTimeField(auto_now_add=True)
     last_seen = models.DateTimeField(null=True)
     alternative = models.CharField(max_length=50)
@@ -127,5 +127,3 @@ def weighted_choice(choices):
         upto += w
         if upto >= r:
             return c
-
-

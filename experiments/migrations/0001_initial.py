@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+import django.db.models.deletion
 import django.utils.timezone
 import jsonfield.fields
 from django.conf import settings
+from django.db import models, migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -31,20 +31,22 @@ class Migration(migrations.Migration):
                 ('alternatives', jsonfield.fields.JSONField(default={}, blank=True)),
                 ('relevant_chi2_goals', models.TextField(default=b'', null=True, blank=True)),
                 ('relevant_mwu_goals', models.TextField(default=b'', null=True, blank=True)),
-                ('state', models.IntegerField(default=0, choices=[(0, b'Default/Control'), (1, b'Enabled'), (3, b'Track')])),
-                ('start_date', models.DateTimeField(default=django.utils.timezone.now, null=True, db_index=True, blank=True)),
+                ('state',
+                 models.IntegerField(default=0, choices=[(0, b'Default/Control'), (1, b'Enabled'), (3, b'Track')])),
+                ('start_date',
+                 models.DateTimeField(default=django.utils.timezone.now, null=True, db_index=True, blank=True)),
                 ('end_date', models.DateTimeField(null=True, blank=True)),
             ],
         ),
         migrations.AddField(
             model_name='enrollment',
             name='experiment',
-            field=models.ForeignKey(to='experiments.Experiment'),
+            field=models.ForeignKey(to='experiments.Experiment', on_delete=django.db.models.deletion.DO_NOTHING),
         ),
         migrations.AddField(
             model_name='enrollment',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=django.db.models.deletion.DO_NOTHING),
         ),
         migrations.AlterUniqueTogether(
             name='enrollment',

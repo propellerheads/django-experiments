@@ -2,7 +2,7 @@ from django import forms
 from django.conf.urls import url
 from django.contrib import admin
 from django.contrib.admin.utils import unquote
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.templatetags.static import static
 from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils import timezone
 
